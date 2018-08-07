@@ -1,0 +1,14 @@
+appVersion: v2018.2.10170
+description: A Helm chart for Jetbrains Hub in Kubernetes
+name: jetbrains-hub
+keywords:
+- jetbrains
+- hub
+home: https://www.jetbrains.com/hub/
+version: 0.0.1
+icon: https://cdn.worldvectorlogo.com/logos/hub-icon.svg
+sources:
+- https://www.jetbrains.com/hub/
+maintainers:
+- name: Aadryn
+  email: aadryn@users.noreply.github.com
