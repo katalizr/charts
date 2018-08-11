@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.vendor }}-{{ .Values.application }}-service
+  labels:
+    vendor: {{ .Values.vendor }}
+    tool: {{ .Values.application }}
+    version: {{ .Values.version }}
+spec:
+  ports:
+    - name: default-http
+      port: 80
+      targetPort: 8080
+  selector:
+    vendor: {{ .Values.vendor }}
+    tool: {{ .Values.application }}
+    version: {{ .Values.version }}

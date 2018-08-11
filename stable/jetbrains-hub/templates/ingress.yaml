@@ -1,0 +1,16 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ .Values.vendor }}-{{ .Values.application }}-ingress
+  labels:
+    vendor: {{ .Values.vendor }}
+    tool: {{ .Values.application }}
+    version: {{ .Values.version }}
+spec:
+  rules:
+    - host: hub.nelite.corp
+      http:
+        paths:
+          - backend:
+              serviceName: {{ .Values.vendor }}-{{ .Values.application }}-service
+              servicePort: 80

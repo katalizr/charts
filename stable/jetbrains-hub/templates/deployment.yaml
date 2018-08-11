@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.vendor }}-{{ .Values.application }}-deployment
+  labels:
+    vendor: {{ .Values.vendor }}
+    tool: {{ .Values.application }}
+    version: {{ .Values.version }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      vendor: {{ .Values.vendor }}
+      tool: {{ .Values.application }}
+      version: {{ .Values.version }}
+  template:
+    metadata:
+      labels:
+        vendor: {{ .Values.vendor }}
+        tool: {{ .Values.application }}
+        version: {{ .Values.version }}
+    spec:
+      initContainers:
+        - name: initiator
+          image: docker.io/{{ .Values.vendor }}/{{ .Values.application }}:{{ .Values.version }}
+          env:
+            - name: SECRET_LOGIN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.vendor }}-{{ .Values.application }}-secret
+                  key: administrator-login
+            - name: SECRET_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.vendor }}-{{ .Values.application }}-secret
+                  key: administrator-password
+          command:
+            - '/bin/bash'
+            - '/opt/hub/bin/hub.sh'
+            - 'configure'
+            - '--base-url=http://hub.nelite.corp:80'
+            - '-J-Ddisable.configuration.wizard.on.clean.install=true'
+            - '-J-Djetbrains.hub.admin.restore=true'
+            - '-J-Djetbrains.hub.admin.login=$(SECRET_LOGIN)'
+            - '-J-Djetbrains.hub.admin.password=$(SECRET_PASSWORD)'
+          volumeMounts:
+            - mountPath: /opt/hub/data
+              name: jetbrains-hub-volume-data
+            - mountPath: /opt/hub/conf
+              name: jetbrains-hub-volume-conf
+            - mountPath: /opt/hub/logs
+              name: jetbrains-hub-volume-logs
+            - mountPath: /opt/hub/backups
+              name: jetbrains-hub-volume-backups
+      containers:
+        - name: agent
+          image: docker.io/{{ .Values.vendor }}/{{ .Values.application }}:{{ .Values.version }}
+
+          volumeMounts:
+          - mountPath: /opt/hub/data
+            name: jetbrains-hub-volume-data
+          - mountPath: /opt/hub/conf
+            name: jetbrains-hub-volume-conf
+          - mountPath: /opt/hub/logs
+            name: jetbrains-hub-volume-logs
+          - mountPath: /opt/hub/backups
+            name: jetbrains-hub-volume-backups
+      volumes:
+        - name: jetbrains-hub-volume-data
+          emptyDir: {}
+        - name: jetbrains-hub-volume-conf
+          emptyDir: {}
+        - name: jetbrains-hub-volume-logs
+          emptyDir: {}
+        - name: jetbrains-hub-volume-backups
+          emptyDir: {}

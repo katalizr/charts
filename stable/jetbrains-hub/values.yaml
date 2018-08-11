@@ -1,0 +1,5 @@
+vendor: jetbrains
+application: hub
+version: 2018.2.10218
+Login: administrator
+# Password: <defaults to random>
